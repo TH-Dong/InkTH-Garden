@@ -1,0 +1,516 @@
+@import "tailwindcss";
+@import "katex/dist/katex.min.css";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  color-scheme: light;
+  --theme-background: oklch(98.6% 0.006 85);
+  --theme-foreground: oklch(28% 0.015 250);
+  --theme-muted: oklch(56% 0.016 250);
+  --theme-muted-strong: oklch(42% 0.016 250);
+  --theme-accent: oklch(50% 0.12 250);
+  --theme-accent-hover: oklch(42% 0.12 250);
+  --theme-accent-light: oklch(95% 0.02 250);
+  --theme-accent-muted: oklch(64% 0.07 250);
+  --theme-border: oklch(91% 0.008 250);
+  --theme-border-subtle: oklch(94.5% 0.008 220);
+  --theme-surface: oklch(97.8% 0.004 85);
+  --theme-surface-elevated: oklch(100% 0 0);
+  --theme-surface-soft: oklch(96.1% 0.008 245);
+  --theme-surface-hover: oklch(93.9% 0.01 245);
+  --theme-code-bg: oklch(97.2% 0.005 245);
+  --shadow-soft: 0 20px 45px -32px rgba(15, 23, 42, 0.28);
+}
+
+html.dark {
+  color-scheme: dark;
+  --theme-background: oklch(18.8% 0.012 255);
+  --theme-foreground: oklch(92.8% 0.01 80);
+  --theme-muted: oklch(70% 0.014 255);
+  --theme-muted-strong: oklch(79.5% 0.015 255);
+  --theme-accent: oklch(72% 0.11 235);
+  --theme-accent-hover: oklch(79% 0.09 230);
+  --theme-accent-light: oklch(28% 0.03 240);
+  --theme-accent-muted: oklch(78% 0.055 235);
+  --theme-border: oklch(33% 0.012 255);
+  --theme-border-subtle: oklch(27.5% 0.012 255);
+  --theme-surface: oklch(23% 0.012 255);
+  --theme-surface-elevated: oklch(26% 0.012 255);
+  --theme-surface-soft: oklch(29% 0.014 255);
+  --theme-surface-hover: oklch(32% 0.014 255);
+  --theme-code-bg: oklch(21% 0.01 255);
+  --shadow-soft: 0 24px 56px -34px rgba(0, 0, 0, 0.65);
+}
+
+@theme inline {
+  --color-background: var(--theme-background);
+  --color-foreground: var(--theme-foreground);
+  --color-muted: var(--theme-muted);
+  --color-muted-strong: var(--theme-muted-strong);
+  --color-accent: var(--theme-accent);
+  --color-accent-hover: var(--theme-accent-hover);
+  --color-accent-light: var(--theme-accent-light);
+  --color-accent-muted: var(--theme-accent-muted);
+  --color-border: var(--theme-border);
+  --color-border-subtle: var(--theme-border-subtle);
+  --color-surface: var(--theme-surface);
+  --color-surface-elevated: var(--theme-surface-elevated);
+  --color-surface-soft: var(--theme-surface-soft);
+  --color-surface-hover: var(--theme-surface-hover);
+  --color-code-bg: var(--theme-code-bg);
+
+  --font-sans: var(--font-sans); /* Figtree */
+  --font-serif: var(--font-serif); /* Spectral */
+  --font-mono: var(--font-mono); /* Fira Code */
+
+  --container-max: 68rem; /* Slightly wider for an airy feel */
+  --space-unit: 0.25rem;
+}
+
+@utility text-fluid-h1 {
+  font-size: clamp(2.5rem, 5vw + 1rem, 4.5rem);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+}
+
+@utility transition-elegant {
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform;
+  transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  transition-duration: 400ms;
+}
+
+@keyframes hero-float-in {
+  from {
+    opacity: 0;
+    transform: translateY(1.1rem);
+    filter: blur(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+
+.hero-line,
+.hero-copy {
+  opacity: 0;
+  animation: hero-float-in 1180ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  will-change: transform, opacity, filter;
+}
+
+body {
+  background:
+    radial-gradient(circle at top, color-mix(in oklch, var(--color-accent) 7%, transparent), transparent 34%),
+    var(--color-background);
+  color: var(--color-foreground);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Consistent page wrapper */
+.page-container {
+  margin-inline: auto;
+  max-width: var(--container-max);
+  padding-inline: max(1.5rem, 5vw);
+}
+
+/* Prose styles for rendered Markdown content */
+.prose {
+  line-height: 1.8;
+  color: var(--color-muted-strong);
+  max-width: 70ch; /* Optimal line length for comfortable reading */
+}
+
+/* Typography Hierarchy */
+.prose h1, .prose h2, .prose h3, .prose h4 {
+  font-family: var(--font-serif);
+  color: var(--color-foreground);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+.prose h2 {
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  margin-top: 3.5rem;
+  margin-bottom: 1.25rem;
+  border-bottom: 1px solid var(--color-border-subtle);
+  padding-bottom: 0.5rem;
+}
+
+.prose h3 {
+  font-size: clamp(1.25rem, 2vw, 1.5rem);
+  margin-top: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.prose p {
+  margin-bottom: 1.5rem;
+}
+
+.prose-knowledge p {
+  white-space: pre-line;
+}
+
+.article-toc-label .katex {
+  font-size: 0.95em;
+}
+
+.article-toc-label .katex-display {
+  display: inline;
+  margin: 0;
+}
+
+.prose ul, .prose ol {
+  margin-bottom: 1.5rem;
+  padding-left: 1.75rem;
+}
+
+.prose ul { list-style-type: disc; }
+.prose ol { list-style-type: decimal; }
+.prose li { margin-bottom: 0.5rem; }
+
+.prose li > p {
+  margin-top: 0;
+  margin-bottom: 0.45rem;
+}
+
+.prose li > p:last-child {
+  margin-bottom: 0;
+}
+
+.prose li > ul,
+.prose li > ol {
+  margin-top: 0.45rem;
+  margin-bottom: 0.65rem;
+}
+
+/* Elegant blockquotes */
+.prose blockquote {
+  border-left: 2px solid var(--color-accent);
+  padding-left: 1.5rem;
+  margin-left: 0;
+  margin-right: 0;
+  color: var(--color-muted-strong);
+  font-style: italic;
+  font-family: var(--font-serif);
+  font-size: 1.1em;
+  margin-bottom: 2rem;
+  margin-top: 2rem;
+}
+
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 2rem;
+  font-size: 0.95rem;
+}
+
+.prose th, .prose td {
+  border-bottom: 1px solid var(--color-border-subtle);
+  padding: 0.75rem 1rem;
+  text-align: left;
+}
+
+.prose th {
+  font-weight: 600;
+  color: var(--color-foreground);
+}
+
+.prose img {
+  max-width: 100%;
+  border-radius: 0; /* Remove rounded corners for a cleaner, editorial look */
+  margin: 2.5rem 0;
+}
+
+.prose a {
+  color: var(--color-accent);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  transition: all 200ms ease;
+}
+
+.prose a:hover {
+  color: var(--color-accent-hover);
+  text-decoration-thickness: 2px;
+}
+
+/* Code Styles */
+.prose code:not(pre code) {
+  background: var(--color-accent-light);
+  color: var(--color-accent-hover);
+  padding: 0.2rem 0.4rem;
+  border-radius: 0.25rem;
+  font-size: 0.85em;
+  font-family: var(--font-mono);
+}
+
+.prose code[data-theme*=" "],
+.prose code[data-theme*=" "] span {
+  color: var(--shiki-light);
+  background-color: transparent;
+}
+
+html.dark .prose code[data-theme*=" "],
+html.dark .prose code[data-theme*=" "] span {
+  color: var(--shiki-dark);
+  background-color: transparent;
+}
+
+.prose figure[data-rehype-pretty-code-figure] {
+  margin: 2rem 0;
+}
+
+.prose figure[data-rehype-pretty-code-figure] pre {
+  margin: 0;
+}
+
+.prose [data-rehype-pretty-code-title] {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 2.5rem;
+  border: 1px solid var(--color-border-subtle);
+  border-bottom: 0;
+  border-radius: 0.5rem 0.5rem 0 0;
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in oklch, var(--color-surface-elevated) 92%, var(--color-accent) 8%),
+      var(--color-surface)
+    );
+  color: var(--color-muted-strong);
+  padding: 0.65rem 0.95rem;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  line-height: 1.3;
+}
+
+.prose [data-rehype-pretty-code-title]::after {
+  content: attr(data-language);
+  flex: 0 0 auto;
+  border: 1px solid var(--color-border-subtle);
+  border-radius: 999px;
+  color: var(--color-muted);
+  padding: 0.1rem 0.45rem;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.prose [data-rehype-pretty-code-title] + pre {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
+.prose [data-rehype-pretty-code-caption] {
+  margin-top: 0.55rem;
+  color: var(--color-muted);
+  font-size: 0.86rem;
+  line-height: 1.6;
+}
+
+.prose pre {
+  position: relative;
+  margin: 2rem 0;
+  border-radius: 0.5rem;
+  border: 1px solid var(--color-border-subtle);
+  overflow-x: auto;
+  font-size: 0.875rem;
+  line-height: 1.7;
+  background: var(--color-code-bg);
+  box-shadow:
+    inset 0 1px 0 color-mix(in oklch, white 72%, transparent),
+    0 18px 40px -32px rgba(15, 23, 42, 0.45);
+}
+
+html.dark .prose pre {
+  box-shadow:
+    inset 0 1px 0 color-mix(in oklch, white 9%, transparent),
+    0 20px 46px -34px rgba(0, 0, 0, 0.75);
+}
+
+.prose pre::before {
+  content: attr(data-language);
+  position: absolute;
+  top: 0.65rem;
+  right: 0.75rem;
+  z-index: 1;
+  border: 1px solid var(--color-border-subtle);
+  border-radius: 999px;
+  background: color-mix(in oklch, var(--color-code-bg) 88%, var(--color-surface-elevated));
+  color: var(--color-muted);
+  padding: 0.12rem 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.prose figure:has([data-rehype-pretty-code-title]) pre::before {
+  display: none;
+}
+
+.prose pre > code {
+  display: block;
+  min-width: max-content;
+  padding: 2.65rem 0 1.25rem;
+  font-family: var(--font-mono);
+  tab-size: 2;
+}
+
+.prose figure:has([data-rehype-pretty-code-title]) pre > code {
+  padding-top: 1.25rem;
+}
+
+.prose pre [data-line] {
+  --code-highlight-bg: color-mix(in oklch, var(--color-accent) 11%, transparent);
+  --code-highlight-border: var(--color-accent);
+  min-height: 1.7em;
+  border-left: 2px solid transparent;
+  padding: 0 1.5rem;
+}
+
+.prose pre [data-highlighted-line] {
+  border-left-color: var(--code-highlight-border);
+  background: var(--code-highlight-bg);
+}
+
+.prose pre [data-highlighted-line-id="a"],
+.prose pre [data-chars-id="a"],
+.prose pre [data-highlighted-line-id="focus"],
+.prose pre [data-chars-id="focus"] {
+  --code-highlight-bg: color-mix(in oklch, oklch(62% 0.12 250) 16%, transparent);
+  --code-highlight-border: oklch(55% 0.14 250);
+}
+
+.prose pre [data-highlighted-line-id="b"],
+.prose pre [data-chars-id="b"],
+.prose pre [data-highlighted-line-id="warn"],
+.prose pre [data-chars-id="warn"] {
+  --code-highlight-bg: color-mix(in oklch, oklch(76% 0.14 86) 18%, transparent);
+  --code-highlight-border: oklch(66% 0.14 86);
+}
+
+.prose pre [data-highlighted-line-id="c"],
+.prose pre [data-chars-id="c"],
+.prose pre [data-highlighted-line-id="add"],
+.prose pre [data-chars-id="add"] {
+  --code-highlight-bg: color-mix(in oklch, oklch(70% 0.13 150) 17%, transparent);
+  --code-highlight-border: oklch(58% 0.13 150);
+}
+
+.prose pre [data-highlighted-line-id="del"],
+.prose pre [data-chars-id="del"] {
+  --code-highlight-bg: color-mix(in oklch, oklch(63% 0.16 28) 15%, transparent);
+  --code-highlight-border: oklch(58% 0.16 28);
+}
+
+.prose pre [data-highlighted-chars] {
+  border: 1px solid var(--code-highlight-border, color-mix(in oklch, var(--color-accent) 38%, transparent));
+  border-radius: 0.25rem;
+  background: var(--code-highlight-bg, color-mix(in oklch, var(--color-accent) 14%, transparent));
+  padding: 0.05rem 0.18rem;
+}
+
+.prose pre code[data-line-numbers] {
+  counter-reset: line;
+}
+
+.prose pre code[data-line-numbers] > [data-line]::before {
+  counter-increment: line;
+  content: counter(line);
+  display: inline-block;
+  width: 2ch;
+  margin-right: 1.25rem;
+  color: var(--color-muted);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  user-select: none;
+}
+
+.prose pre code[data-line-numbers-max-digits="3"] > [data-line]::before {
+  width: 3ch;
+}
+
+.prose pre code[data-line-numbers-max-digits="4"] > [data-line]::before {
+  width: 4ch;
+}
+
+.prose strong {
+  font-weight: 600;
+  color: var(--color-foreground);
+}
+
+.prose mark {
+  background: color-mix(in oklch, var(--color-accent) 15%, transparent);
+  color: inherit;
+  padding: 0.1rem 0.2rem;
+  border-radius: 0.15rem;
+}
+
+/* KaTeX block formulas */
+.prose .katex-display {
+  margin: 2.5rem 0;
+  overflow-x: auto;
+  padding: 1rem 0;
+}
+
+/* Denser rhythm for knowledge notes with frequent display math blocks */
+.prose-knowledge {
+  line-height: 1.72;
+}
+
+.prose-knowledge h2 {
+  margin-top: 3rem;
+  margin-bottom: 1rem;
+}
+
+.prose-knowledge h3 {
+  margin-top: 2rem;
+  margin-bottom: 0.85rem;
+}
+
+.prose-knowledge p {
+  margin-bottom: 1rem;
+  white-space: pre-line;
+}
+
+.prose-knowledge ul,
+.prose-knowledge ol {
+  margin-bottom: 1rem;
+}
+
+.prose-knowledge li {
+  margin-bottom: 0.35rem;
+}
+
+.prose-knowledge p:has(> .katex-display) {
+  margin: 0.8rem 0;
+  line-height: 1.4;
+}
+
+.prose-knowledge li > p {
+  margin-top: 0;
+  margin-bottom: 0.45rem;
+}
+
+.prose-knowledge li > p:last-child {
+  margin-bottom: 0;
+}
+
+.prose-knowledge p:has(+ p > .katex-display) {
+  margin-bottom: 0.6rem;
+}
+
+.prose-knowledge .katex-display {
+  margin: 0;
+  padding: 0.35rem 0;
+}
