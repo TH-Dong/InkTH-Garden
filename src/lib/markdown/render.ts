@@ -9,6 +9,7 @@ import rehypePrettyCode, {
   type Options as RehypePrettyCodeOptions,
 } from "rehype-pretty-code";
 import rehypeStringify from "rehype-stringify";
+import { withBasePath } from "@/lib/basePath";
 
 const prettyCodeOptions: RehypePrettyCodeOptions = {
   theme: {
@@ -125,7 +126,7 @@ function convertObsidianImages(md: string, imageBasePath: string): string {
       }
     }
 
-    const src = `${imageBasePath}/${filename}`;
+    const src = withBasePath(`${imageBasePath}/${filename}`);
     return `<img src="${src}" alt="${filename}"${widthAttr} />`;
   });
 }
@@ -190,6 +191,12 @@ function convertHighlights(md: string): string {
   return processed;
 }
 
+function prefixAbsoluteMarkdownAssetPaths(md: string): string {
+  return md
+    .replace(/\]\((\/[^)\s]+)\)/g, (_match, path: string) => `](${withBasePath(path)})`)
+    .replace(/src="(\/[^"]+)"/g, (_match, path: string) => `src="${withBasePath(path)}"`);
+}
+
 /** Convert raw markdown string to HTML string */
 export async function renderMarkdown(
   markdown: string,
@@ -197,6 +204,7 @@ export async function renderMarkdown(
 ): Promise<string> {
   const imageBasePath = getImageBasePath(slug);
   let content = convertObsidianImages(markdown, imageBasePath);
+  content = prefixAbsoluteMarkdownAssetPaths(content);
   content = normalizeBlockMath(content);
   content = normalizeListItemBlockMath(content);
   content = convertHighlights(content);

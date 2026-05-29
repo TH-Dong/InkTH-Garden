@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { withBasePath } from "@/lib/basePath";
 
 const interests = [
   "Computer Science",
@@ -29,7 +30,7 @@ export default function AboutPage() {
           </div>
 
           <Image
-            src="/avatar.png"
+            src={withBasePath("/avatar.png")}
             alt="Avatar"
             width={96}
             height={96}

@@ -2,6 +2,7 @@ import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
 import type { Reading } from "@/types/content";
+import { withBasePath } from "@/lib/basePath";
 
 const CONTENT_DIR = path.join(process.cwd(), "src/content/readings");
 
@@ -16,7 +17,7 @@ function parseReading(filePath: string): Reading {
     author: data.author ?? "",
     date: data.date ?? "",
     tags: data.tags ?? [],
-    cover: data.cover,
+    cover: typeof data.cover === "string" ? withBasePath(data.cover) : undefined,
     comment: data.comment,
     noteLink: data.noteLink,
     draft: data.draft ?? false,
