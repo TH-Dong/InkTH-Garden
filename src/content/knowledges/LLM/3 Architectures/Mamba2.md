@@ -57,7 +57,7 @@ SSM推理$O(N)$的优点很明显 但是因为他是递归的 而这很难利用
 对于巨大的$T\times T$ 矩阵 我们把他分解成小块
 + 块内(Intra-chunk)我们采用attention模式 块小 qudratic可以接受 而且能利用上GPU效率
 + 块间(Inter-chunk)我们采用SSM递归模式
-![SSD chunkwise computation](/images/knowledges/llm/3-Architecture/image-4.png)
+![SSD chunkwise computation](/images/knowledges/llm/3-architectures/image-4.png)
 
 | Attention               | SSM    | SSD    |        |
 | ----------------------- | ------ | ------ | ------ |

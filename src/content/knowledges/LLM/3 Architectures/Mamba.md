@@ -74,7 +74,7 @@ $$\begin{aligned} h_k &= \overline{\mathbf{A}} h_{k-1} + \overline{\mathbf{B}} x
 	- $y_1 = \mathbf{C}\overline{\mathbf{A}}\overline{\mathbf{B}}x_0 + \mathbf{C}\overline{\mathbf{B}}x_1$
 	- $y_2 = \mathbf{C}\overline{\mathbf{A}}^2\overline{\mathbf{B}}x_0 + \mathbf{C}\overline{\mathbf{A}}\overline{\mathbf{B}}x_1 + \mathbf{C}\overline{\mathbf{B}}x_2$
 	这显然可以写成这样的一个Convolution$$y = x * \overline{\mathbf{K}}$$其中SSM Kernel $\overline{\mathbf{K}}$ 为：$$\overline{\mathbf{K}} = (\mathbf{C}\overline{\mathbf{B}}, \mathbf{C}\overline{\mathbf{A}}\overline{\mathbf{B}}, \mathbf{C}\overline{\mathbf{A}}^2\overline{\mathbf{B}}, \dots, \mathbf{C}\overline{\mathbf{A}}^{L-1}\overline{\mathbf{B}})$$训练时 我们一次性算出kernel(FFT) 然后就可以计算整个seq的输出 **并行训练高效**
-![SSM recurrence and convolution](/images/knowledges/llm/3-Architecture/image.png)
+![SSM recurrence and convolution](/images/knowledges/llm/3-architectures/image.png)
 
 **==Question:Why Not just learn A?==**
 为什么不直接利用nn去学习一个$\overline{\mathbf{A}}$?
@@ -93,7 +93,7 @@ $$\begin{aligned} h_k &= \overline{\mathbf{A}} h_{k-1} + \overline{\mathbf{B}} x
 问题:前面提到了梯度消失和爆炸的问题,记不了长距离的信息
 HiPPO的思想:**如果要完美地记住过去所有的输入历史 $x(t)$，我们需要存下什么？**
 我们用一个多项式去拟合这些庞大的数据点$f(t) = c_0 + c_1 t + c_2 t^2 + \dots$ 最后我们只需要去存储他的系数就可以了$[c_0, c_1, c_2, \dots]$
-![HiPPO intuition](/images/knowledges/llm/3-Architecture/image-1.png)
+![HiPPO intuition](/images/knowledges/llm/3-architectures/image-1.png)
 **Def:** High-order Polynomial Projection Operators
 把历史输入 $x(t)$ 投影到一组**正交多项式**（通常是勒让德多项式 Legendre Polynomials）上 而那个隐藏状态 **$h(t)$**，存的正是这组多项式的**系数**
 $\tau$ 代表历史的回忆轴, $x(\tau)$代表客观的历史输入,$g^{(t)}(\tau)$ 代表我们去模拟的记忆(近似曲线),$P_n(\tau)$代表我们函数的basis $$g^{(t)}(\tau) = \sum_{n=0}^{N-1} c_n(t) P_n(\tau)$$而我们的SSM中的hidden state 就是这组系数向量$$h(t) = \begin{bmatrix} c_0(t) \\ c_1(t) \\ \vdots \\ c_{N-1}(t) \end{bmatrix}$$
@@ -122,7 +122,7 @@ $\mathbf{B}$ 通常被算出来是一个全非零的向量 这意味着当前的
 我们考虑到由于由于 $\bar{A}$ 继承了 $A$ 的 NPLR 结构，这个待求逆的矩阵本质上也是 **“对角矩阵 + 低秩矩阵”** 的形式,我们利用这个恒等式$$(A + UV^*)^{-1} = A^{-1} - A^{-1}U(I + V^*A^{-1}U)^{-1}V^*A^{-1}$$我们只把求逆操作作用在这个好计算的对角矩阵上面,然后通过低秩项俩进行修正
 我们核心的计算任务变成了计算形如 $x^* (\text{Diagonal}^{-1}) y$ 的项
 对角矩阵的逆，本质上就是包含 $\frac{1}{\omega_i - \lambda_j}$ 这种项的矩阵 计算 $\hat{K}(z)$ 在复平面单位根上的值，最终归结为：$$\sum_{j} \frac{x_j y_j}{\omega_i - \lambda_j}$$
-![Cauchy kernel structure](/images/knowledges/llm/3-Architecture/image-2.png)
+![Cauchy kernel structure](/images/knowledges/llm/3-architectures/image-2.png)
 - HiPPO 很好但不稳定 → 想对角化但 $V$ 爆炸 → **发现 HiPPO 是 NPLR 结构**
 - NPLR 幂运算依然慢 → **转为生成函数求逆**
 - 一般矩阵求逆慢 → **利用 NPLR 结构使用 Woodbury 修正**
@@ -191,7 +191,7 @@ S4因为可以用conv训练所以更高速
 - Backward：当需要计算梯度时，从 HBM 重新读取输入和参数，在 SRAM 中**重新执行一遍前向计算**，现场还原出 $h$，然后计算梯度 
 ==计算永远比读写更快==
 ### Mamba Architecture
-![Mamba architecture](/images/knowledges/llm/3-Architecture/image-3.png)
+![Mamba architecture](/images/knowledges/llm/3-architectures/image-3.png)
 本质上也是在堆叠同一种Block
 projection之后我们做一次conv 本质上是为了提取局部上下文的信息 然后加激活函数 提取nonlinear的feature 然后进入selective SSM的内部层
 
