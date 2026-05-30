@@ -6,7 +6,7 @@ tags:
   - Guide
   - Reading
   - Website
-cover: "/images/readings/image.png"
+cover: "/images/readings/guide-books.jpg"
 comment: "一个给自己看的快速说明：如何添加一本新的 Reading 书籍、封面和阅读短文。"
 noteLink: ""
 draft: false

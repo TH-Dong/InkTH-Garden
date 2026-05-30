@@ -10,8 +10,8 @@ const interests = [
 ];
 
 const contacts = [
-  { label: "GitHub", href: "https://github.com" },
-  { label: "Email", href: "mailto:hello@example.com" },
+  { label: "GitHub", href: "https://github.com/TH-Dong" },
+  { label: "Email", href: "mailto:dongm4805@gmail.com" },
 ];
 
 export default function AboutPage() {
